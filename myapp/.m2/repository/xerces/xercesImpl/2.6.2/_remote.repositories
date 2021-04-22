@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 06:41:54 UTC 2021
+xercesImpl-2.6.2.pom>adobe-public-releases=
+xercesImpl-2.6.2.pom>=
+xercesImpl-2.6.2.jar>adobe-public-releases=

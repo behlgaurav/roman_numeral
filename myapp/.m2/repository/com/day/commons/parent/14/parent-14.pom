@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!-- ====================================================================== -->
+    <!-- P A R E N T  P R O J E C T  D E S C R I P T I O N                      -->
+    <!-- ====================================================================== -->
+    <parent>
+        <groupId>com.adobe.granite</groupId>
+        <artifactId>parent</artifactId>
+        <version>21</version>
+        <relativePath />
+    </parent>
+
+    <!-- ====================================================================== -->
+    <!-- P R O J E C T  D E S C R I P T I O N                                   -->
+    <!-- ====================================================================== -->
+    <groupId>com.day.commons</groupId>
+    <artifactId>parent</artifactId>
+    <version>14</version>
+    <packaging>pom</packaging>
+
+    <name>Day Commons Library (Parent Project)</name>
+    <description>
+        The Day Commons Library provides miscellaneous libraries
+        providing commons functionality used in multiple projects.
+        As a collection of libraries, the Day Commons Library is
+        comparable to the Apache Commons Library.
+    </description>
+    <inceptionYear>1993</inceptionYear>
+
+    <!-- ====================================================================== -->
+    <!-- S C M  D E F I N I T I O N                                             -->
+    <!-- ====================================================================== -->
+    <scm>
+        <connection>scm:git:git@fit.corp.adobe.com:Granite/commons.git</connection>
+        <developerConnection>scm:git:git@fit.corp.adobe.com:Granite/commons.git</developerConnection>
+        <url>https://fit.corp.adobe.com/Granite/commons/tree/master/parent</url>
+      <tag>parent-14</tag>
+  </scm>
+
+    <!-- ====================================================================== -->
+    <!-- D E P E N D E N C Y   M A N A G E M E N T                              -->
+    <!-- ====================================================================== -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.day.crx</groupId>
+                <artifactId>crx-api</artifactId>
+                <version>2.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.day.crx</groupId>
+                <artifactId>crx-commons</artifactId>
+                <version>2.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.day.crx</groupId>
+                <artifactId>crx-core</artifactId>
+                <version>2.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- SLF4j / Log4j -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>1.5.2</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>1.4</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.4</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <scope>provided</scope>
+                <version>3.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 06:41:54 UTC 2021
+mockito-junit-jupiter-3.3.3.jar>central=
+mockito-junit-jupiter-3.3.3.pom>=
+mockito-junit-jupiter-3.3.3.pom>central=

@@ -1,0 +1,745 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  wcm.io
+  %%
+  Copyright (C) 2014 wcm.io
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!--
+    This aem-global-parent POM supports the following AEM versions: AEM 6.0 and above.
+  -->
+
+  <parent>
+    <groupId>io.wcm.maven</groupId>
+    <artifactId>io.wcm.maven.global-parent</artifactId>
+    <version>31</version>
+    <relativePath />
+  </parent>
+
+  <groupId>io.wcm.maven</groupId>
+  <artifactId>io.wcm.maven.aem-global-parent</artifactId>
+  <version>1.4.4</version>
+  <packaging>pom</packaging>
+
+  <name>io.wcm.maven.aem-global-parent</name>
+  <description>Global parent for Maven artifact hierarchy for AEM projects. Defines AEM-specific plugins and general Maven settings.</description>
+
+  <scm>
+    <connection>scm:git:https://github.com/wcm-io/wcm-io-tooling.git</connection>
+    <developerConnection>scm:git:https://github.com/wcm-io/wcm-io-tooling.git</developerConnection>
+    <url>https://github.com/wcm-io/wcm-io-tooling</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <properties>
+
+    <!-- AEM instance parameters -->
+    <sling.url>http://localhost:4502</sling.url>
+    <sling.user>admin</sling.user>
+    <sling.password>admin</sling.password>
+    <sling.publish.url>http://localhost:4503</sling.publish.url>
+    <sling.publish.user>admin</sling.publish.user>
+    <sling.publish.password>admin</sling.publish.password>
+
+    <!-- versions -->
+    <sling.sling-maven-plugin.version>2.4.2</sling.sling-maven-plugin.version>
+    <bnd.version>5.0.0</bnd.version>
+
+  </properties>
+
+  <dependencies>
+
+    <!-- OSGi bundle and versioning annotations -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.annotation.bundle</artifactId>
+      <version>1.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.annotation.versioning</artifactId>
+      <version>1.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- OSGi DS and metatype annotations -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.component.annotations</artifactId>
+      <version>1.4.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.metatype.annotations</artifactId>
+      <version>1.4.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.servlets.annotations</artifactId>
+      <version>1.2.4</version>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <!-- Felix SCR DS annotations supported as well, but not included as default dependency by default any longer -->
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.scr.annotations</artifactId>
+        <version>1.12.0</version>
+      </dependency>
+
+      <!-- Keep dependency for backward compatibility (earlier osgi-mock version declared it as transitive dependency with an outdated version) -->
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>annotations</artifactId>
+        <!-- Downgrade to 3.0.0 because 3.0.1u2 creates an OSGi dependency to javax.annotation 3.0.1 not present in AEM -->
+        <version>3.0.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- Keep dependency for backward compatibility (it is recommended to use the null-check annotations from findbugs namespace instead) -->
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <!-- Downgrade to 3.0.0 because 3.0.2 creates an OSGi dependency to javax.annotation 3.0.1 not present in AEM -->
+        <version>3.0.0</version>
+        <scope>provided</scope>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <!-- those resources are processed by the i18n-maven-plugin -->
+          <exclude>i18n/**</exclude>
+        </excludes>
+      </resource>
+      <!-- copy webapp resources to SLING-INF/app-root -->
+      <resource>
+        <directory>src/main/webapp</directory>
+        <targetPath>SLING-INF</targetPath>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+    <plugins>
+
+      <!-- Do not generate site (only for this pom) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <skip>true</skip>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+      </plugin>
+
+      <!-- gitflow customization (only for this pom) -->
+      <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <!-- Prefix release numbers with artifactId for GIT repo with more than one released artifact -->
+          <flowInitContext>
+            <releaseBranchPrefix>release/${project.artifactId}-</releaseBranchPrefix>
+            <hotfixBranchPrefix>hotfix/${project.artifactId}-</hotfixBranchPrefix>
+            <versionTagPrefix>${project.artifactId}-</versionTagPrefix>
+          </flowInitContext>
+        </configuration>
+      </plugin>
+
+      <!-- Make sure Felix SCR Plugin is not included in build - maven-bundle-plugin with SCR plugin is used instead -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>ban-maven-scr-plugin</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedPlugins>
+                  <excludes>
+                    <exclude>org.apache.felix:maven-scr-plugin</exclude>
+                  </excludes>
+                  <message>Please remove maven-scr-plugin from your POMs - Felix SCR annotations are now processed by maven-bundle-plugin with Felix SCR bnd plugin.</message>
+                </bannedPlugins>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ban-maven-sling-plugin</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedPlugins>
+                  <excludes>
+                    <exclude>org.apache.sling:maven-sling-plugin</exclude>
+                  </excludes>
+                  <message>Please change all occurences of maven-sling-plugin to sling-maven-plugin (plugin was renamed).</message>
+                </bannedPlugins>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>warn-maven-scr-annotations</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <level>WARN</level>
+                  <excludes>
+                    <exclude>org.apache.felix:org.apache.felix.scr.annotations</exclude>
+                  </excludes>
+                  <message>
+******************************************************************************
+
+  Your project is using Felix SCR annotations for OSGi Declarative Services.
+
+  Felix SCR annotations are deprecated:
+    org.apache.felix:org.apache.felix.scr.annotations
+  
+  Please switch to OSGi Service Component annotations.
+
+*********************************************************************
+
+</message>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Validate JSON files -->
+      <plugin>
+        <groupId>org.apache.sling</groupId>
+        <artifactId>sling-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>validate-json</id>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Validate Slightly HTML scripts -->
+      <plugin>
+        <groupId>org.apache.sling</groupId>
+        <artifactId>htl-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>validate-scripts</id>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sourceDirectory>src/main/webapp</sourceDirectory>
+          <includes>
+            <include>**/*.html</include>
+          </includes>
+          <failOnWarnings>true</failOnWarnings>
+          <allowedExpressionOptions>
+            <!-- AEM-specific HTL expression options -->
+            <option>wcmmode</option>
+            <option>decorationTagName</option>
+            <option>cssClassName</option>
+            <option>decoration</option>
+          </allowedExpressionOptions>
+        </configuration>
+      </plugin>
+
+    </plugins>
+    <pluginManagement>
+      <plugins>
+
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-maven-plugin</artifactId>
+          <version>${bnd.version}</version>
+          <configuration>
+            <bnd>
+              <!-- Add build number and timestamp -->
+              Scm-Revision: ${buildNumber} at ${timestamp}
+
+              <!-- Do not set Bundle-Developers -->
+              Bundle-Developers:
+
+              <!-- Do not set Bundle-DocURL because the maven auto-generated URLs are often not useful -->
+              Bundle-DocURL:
+
+              <!-- Export all versioned packages by default -->
+              -exportcontents: ${packages;VERSIONED}
+
+              <!-- Use "SNAPSHOT" suffix for snapshot bundle versions -->
+              -snapshot: SNAPSHOT
+
+              <!-- Generate bundle header containing all configuration annotation classes -->
+              -plugin.slingcaconfig: org.apache.sling.caconfig.bndplugin.ConfigurationClassScannerPlugin
+              <!-- Generate bundle header for Sling Models classes -->
+              -plugin.slingmodels: org.apache.sling.bnd.models.ModelsScannerPlugin
+
+              <!-- Remove Private-Package header as it may contain lists of all SLING-INF folders -->
+              -removeheaders: Private-Package
+
+              <!-- Suppress warnings in Eclipse about generate maven properties not available -->
+              -fixupmessages.buildNumber: 'No translation found for macro: buildNumber'
+              -fixupmessages.timestamp: 'No translation found for macro: timestamp'
+
+              <!-- reproducible builds (https://github.com/bndtools/bnd/issues/3521) -->
+              -noextraheaders: true
+            </bnd>
+          </configuration>
+          <executions>
+            <execution>
+              <id>bnd-process</id>
+              <goals>
+                <goal>bnd-process</goal>
+              </goals>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.sling</groupId>
+              <artifactId>org.apache.sling.caconfig.bnd-plugin</artifactId>
+              <version>1.0.2</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.sling</groupId>
+              <artifactId>org.apache.sling.bnd.models</artifactId>
+              <version>1.0.0</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-baseline-maven-plugin</artifactId>
+          <version>${bnd.version}</version>
+          <configuration>
+            <includeDistributionManagement>false</includeDistributionManagement>
+            <fullReport>true</fullReport>
+          </configuration>
+          <executions>
+            <execution>
+              <id>bnd-baseline</id>
+              <goals>
+                <goal>baseline</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>4.2.1</version>
+          <extensions>true</extensions>
+          <executions>
+            <!-- Configure extra execution of 'manifest' in process-classes phase to make sure SCR metadata is generated before unit test runs -->
+            <execution>
+              <id>scr-metadata</id>
+              <goals>
+                <goal>manifest</goal>
+              </goals>
+              <configuration>
+                <supportIncrementalBuild>true</supportIncrementalBuild>
+              </configuration>
+            </execution>
+          </executions>
+          <configuration>
+            <exportScr>true</exportScr>
+            <noWarningProjectTypes>
+              <noWarningProjectType>maven-plugin</noWarningProjectType>
+            </noWarningProjectTypes>
+            <instructions>
+              <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+              <Bundle-Description>${project.description}</Bundle-Description>
+              <Scm-Revision>${buildNumber} at ${timestamp}</Scm-Revision>
+              <!-- Enable processing of OSGI DS component annotations -->
+              <_dsannotations>*</_dsannotations>
+              <!-- Enable processing of OSGI metatype annotations -->
+              <_metatypeannotations>*</_metatypeannotations>
+              <_plugin>
+                <!-- Support parsing of maven-scr-plugin annotations through the felix.scr.bnd plugin -->
+                org.apache.felix.scrplugin.bnd.SCRDescriptorBndPlugin;destdir=${project.build.outputDirectory},
+                <!-- Generate bundle header containing all configuration annotation classes -->
+                org.apache.sling.caconfig.bndplugin.ConfigurationClassScannerPlugin,
+                <!-- Generate bundle header for Sling Models classes -->
+                org.apache.sling.bnd.models.ModelsScannerPlugin
+              </_plugin>
+            </instructions>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>org.apache.felix.scr.bnd</artifactId>
+              <version>1.9.6</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>org.apache.felix.scr.annotations</artifactId>
+              <version>1.12.0</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.sling</groupId>
+              <artifactId>org.apache.sling.caconfig.bnd-plugin</artifactId>
+              <version>1.0.2</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.sling</groupId>
+              <artifactId>org.apache.sling.bnd.models</artifactId>
+              <version>1.0.0</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.sling</groupId>
+          <artifactId>sling-maven-plugin</artifactId>
+          <version>${sling.sling-maven-plugin.version}</version>
+          <!-- Default configuration for deploying bundles into running AEM instance -->
+          <configuration>
+            <slingUrl>${sling.url}/system/console</slingUrl>
+            <user>${sling.user}</user>
+            <password>${sling.password}</password>
+            <deployFsResourceBundlePrerequisites>
+              <bundlePrerequisite>
+                <bundles>
+                  <bundle>
+                    <groupId>org.apache.sling</groupId>
+                    <artifactId>org.apache.sling.commons.johnzon</artifactId>
+                    <version>1.0.0</version>
+                  </bundle>
+                  <bundle>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-collections4</artifactId>
+                    <version>4.1</version>
+                    <symbolicName>org.apache.commons.collections4</symbolicName>
+                  </bundle>
+                  <bundle>
+                    <groupId>org.apache.sling</groupId>
+                    <artifactId>org.apache.sling.fsresource</artifactId>
+                    <version>2.1.16</version>
+                  </bundle>
+                </bundles>
+                <preconditions>
+                  <bundle>
+                    <groupId>org.apache.sling</groupId>
+                    <artifactId>org.apache.sling.resourceresolver</artifactId>
+                    <version>1.5.18</version>
+                  </bundle>
+                </preconditions>
+              </bundlePrerequisite>
+              <bundlePrerequisite>
+                <bundles>
+                  <bundle>
+                    <groupId>org.apache.sling</groupId>
+                    <artifactId>org.apache.sling.fsresource</artifactId>
+                    <version>1.4.8</version>
+                  </bundle>
+                </bundles>
+              </bundlePrerequisite>
+            </deployFsResourceBundlePrerequisites>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.sling</groupId>
+          <artifactId>htl-maven-plugin</artifactId>
+          <version>1.3.4-1.4.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>com.adobe.granite.maven</groupId>
+          <artifactId>xgettext-maven-plugin</artifactId>
+          <version>1.4</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.jackrabbit</groupId>
+          <artifactId>filevault-package-maven-plugin</artifactId>
+          <version>1.1.0</version>
+          <configuration>
+            <filterSource>META-INF/vault/filter.xml</filterSource>
+            <thumbnailImage>META-INF/vault/definition/thumbnail.png</thumbnailImage>
+            <failOnDependencyErrors>true</failOnDependencyErrors>
+            <failOnEmptyFilter>true</failOnEmptyFilter>
+            <failOnMissingEmbed>true</failOnMissingEmbed>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>com.day.jcr.vault</groupId>
+          <artifactId>content-package-maven-plugin</artifactId>
+          <!-- Stick with version 0.5.1 because 0.5.24 contains new validation - and it's recommended to switch to filevault-package-maven-plugin -->
+          <version>0.5.1</version>
+          <configuration>
+            <failOnError>true</failOnError>
+            <failOnMissingEmbed>true</failOnMissingEmbed>
+            <targetURL>${sling.url}/crx/packmgr/service.jsp</targetURL>
+            <serviceURL>${sling.url}/crx/packmgr/service/.json</serviceURL>
+            <userId>${sling.user}</userId>
+            <password>${sling.password}</password>
+            <builtContentDirectory>jcr_root</builtContentDirectory>
+            <verbose>true</verbose>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>io.wcm.maven.plugins</groupId>
+          <artifactId>wcmio-content-package-maven-plugin</artifactId>
+          <version>1.7.4</version>
+          <configuration>
+            <serviceURL>${sling.url}/crx/packmgr/service</serviceURL>
+            <userId>${sling.user}</userId>
+            <password>${sling.password}</password>
+            <excludeFiles>
+              <exclude>^META-INF/.*</exclude>
+              <!-- exclude renditions that are automatically generated -->
+              <exclude>.*/cq5dam\.thumbnail\..*</exclude>
+            </excludeFiles>
+            <excludeProperties>
+              <exclude>jcr\:created</exclude>
+              <exclude>jcr\:createdBy</exclude>
+              <exclude>jcr\:lastModified</exclude>
+              <exclude>jcr\:lastModifiedBy</exclude>
+              <exclude>jcr\:uuid</exclude>
+              <exclude>jcr\:isCheckedOut</exclude>
+              <exclude>cq\:lastModified</exclude>
+              <exclude>cq\:lastModifiedBy</exclude>
+              <exclude>cq\:lastReplicated</exclude>
+              <exclude>cq\:lastReplicatedBy</exclude>
+              <exclude>cq\:lastReplicationAction</exclude>
+              <exclude>cq\:lastRolledout</exclude>
+              <exclude>cq\:lastRolledoutBy</exclude>
+              <exclude>dam\:extracted</exclude>
+              <exclude>dam\:sha1</exclude>
+              <exclude>dam\:Comments</exclude>
+              <exclude>dam\:assetState</exclude>
+              <exclude>dam\:relativePath</exclude>
+              <exclude>dc\:modified</exclude>
+            </excludeProperties>
+            <excludeMixins>
+              <exclude>mix\:versionable</exclude>
+              <exclude>mix\:referenceable</exclude>
+              <exclude>cq\:Taggable</exclude>
+              <exclude>cq\:ReplicationStatus</exclude>
+            </excludeMixins>
+            <unpackDeleteDirectories>
+              <directory>jcr_root</directory>
+            </unpackDeleteDirectories>
+            <failOnMissingEmbed>true</failOnMissingEmbed>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>io.wcm.maven.plugins</groupId>
+          <artifactId>cq-maven-plugin</artifactId>
+          <version>1.1.2</version>
+          <configuration>
+            <slingPluginVersion>${sling.sling-maven-plugin.version}</slingPluginVersion>
+            <slingConsoleUrl>${sling.url}/system/console</slingConsoleUrl>
+            <slingConsoleUser>${sling.user}</slingConsoleUser>
+            <slingConsolePassword>${sling.password}</slingConsolePassword>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>io.wcm.maven.plugins</groupId>
+          <artifactId>i18n-maven-plugin</artifactId>
+          <version>1.2.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>io.wcm.maven.plugins</groupId>
+          <artifactId>nodejs-maven-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>io.wcm.devops.conga</groupId>
+          <artifactId>conga-maven-plugin</artifactId>
+          <version>1.12.0</version>
+          <extensions>true</extensions>
+          <dependencies>
+            <dependency>
+              <groupId>io.wcm.devops.conga.plugins</groupId>
+              <artifactId>io.wcm.devops.conga.plugins.sling</artifactId>
+              <version>1.2.6</version>
+            </dependency>
+            <dependency>
+              <groupId>io.wcm.devops.conga.plugins</groupId>
+              <artifactId>io.wcm.devops.conga.plugins.aem</artifactId>
+              <version>1.10.0</version>
+            </dependency>
+            <dependency>
+              <groupId>io.wcm.devops.conga.plugins</groupId>
+              <artifactId>io.wcm.devops.conga.plugins.ansible</artifactId>
+              <version>1.3.0</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>io.wcm.devops.conga.plugins</groupId>
+          <artifactId>conga-aem-maven-plugin</artifactId>
+          <version>1.10.0</version>
+          <configuration>
+            <serviceURL>${sling.url}/crx/packmgr/service</serviceURL>
+            <userId>${sling.user}</userId>
+            <password>${sling.password}</password>
+          </configuration>
+        </plugin>
+
+      </plugins>
+
+    </pluginManagement>
+
+  </build>
+
+  <profiles>
+
+    <!-- Switch deployment settings to publish instance -->
+    <profile>
+      <id>publish</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.sling</groupId>
+              <artifactId>sling-maven-plugin</artifactId>
+              <configuration>
+                <slingUrl>${sling.publish.url}/system/console</slingUrl>
+                <user>${sling.publish.user}</user>
+                <password>${sling.publish.password}</password>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>com.day.jcr.vault</groupId>
+              <artifactId>content-package-maven-plugin</artifactId>
+              <configuration>
+                <targetURL>${sling.publish.url}/crx/packmgr/service.jsp</targetURL>
+                <serviceURL>${sling.publish.url}/crx/packmgr/service/.json</serviceURL>
+                <userId>${sling.publish.user}</userId>
+                <password>${sling.publish.password}</password>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>io.wcm.maven.plugins</groupId>
+              <artifactId>wcmio-content-package-maven-plugin</artifactId>
+              <configuration>
+                <serviceURL>${sling.publish.url}/crx/packmgr/service</serviceURL>
+                <userId>${sling.publish.user}</userId>
+                <password>${sling.publish.password}</password>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>io.wcm.maven.plugins</groupId>
+              <artifactId>cq-maven-plugin</artifactId>
+              <configuration>
+                <slingConsoleUrl>${sling.publish.url}/system/console</slingConsoleUrl>
+                <slingConsoleUser>${sling.publish.user}</slingConsoleUser>
+                <slingConsolePassword>${sling.publish.password}</slingConsolePassword>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>io.wcm.devops.conga.plugins</groupId>
+              <artifactId>conga-aem-maven-plugin</artifactId>
+              <version>1.8.14</version>
+              <configuration>
+                <serviceURL>${sling.publish.url}/crx/packmgr/service</serviceURL>
+                <userId>${sling.publish.user}</userId>
+                <password>${sling.publish.password}</password>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+
+    <!-- profile used for building releases and deployment to sonatype/maven central -->
+    <profile>
+      <id>release-profile</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <!-- sign the build -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <inherited>false</inherited>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- configure staging process at sonatype.-->
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.8</version>
+            <inherited>false</inherited>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <!-- Deployed artifacts should go to staging to be reviewed before publish -->
+              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
+</project>

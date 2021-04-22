@@ -1,0 +1,725 @@
+<?xml version="1.0"?>
+<!--
+/*************************************************************************
+*
+* ADOBE CONFIDENTIAL
+* ___________________
+*
+*  Copyright 2011 Adobe Systems Incorporated
+*  All Rights Reserved.
+*
+* NOTICE:  All information contained herein is, and remains
+* the property of Adobe Systems Incorporated and its suppliers,
+* if any.  The intellectual and technical concepts contained
+* herein are proprietary to Adobe Systems Incorporated and its
+* suppliers and are protected by trade secret or copyright law.
+* Dissemination of this information or reproduction of this material
+* is strictly forbidden unless prior written permission is obtained
+* from Adobe Systems Incorporated.
+**************************************************************************/
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!-- ======================================================================= -->
+    <!-- P A R E N T                                                             -->
+    <!-- ======================================================================= -->
+    <parent>
+        <groupId>com.adobe</groupId>
+        <artifactId>adobe</artifactId>
+        <version>6</version>
+    </parent>
+
+    <!-- ======================================================================= -->
+    <!-- P R O J E C T                                                           -->
+    <!-- ======================================================================= -->
+    <groupId>com.day.cq</groupId>
+    <artifactId>parent</artifactId>
+    <packaging>pom</packaging>
+    <version>36</version>
+
+    <name>Adobe Communique 5 (Parent Project)</name>
+    <description>The parent project to the Communique 5 parts</description>
+    <inceptionYear>2006</inceptionYear>
+
+    <properties>
+        <sling.url.author>http://localhost:4502/crx/repository/crx.default</sling.url.author>
+        <sling.url.publish>http://localhost:4503/crx/repository/crx.default</sling.url.publish>
+        <!--
+            Java API and class file compliance. This property supports
+            one of two values:
+            - 5: Java 1.5 (default)
+            - 6: Java 6
+            Using anything else causes the set-bundle-required-execution-environment
+            to fail the build with an exception
+        -->        
+        <cq.java.version>5</cq.java.version>
+    </properties>
+
+    <scm>
+        <connection>scm:git:git@git.corp.adobe.com:CQ5/cq5.git</connection>
+        <developerConnection>scm:git:git@git.corp.adobe.com:CQ5/cq5.git</developerConnection>
+        <url>https://git.corp.adobe.com/CQ5/cq5/tree/master/build/parent</url>
+      <tag>parent-36</tag>
+  </scm>
+
+    <!-- ======================================================================= -->
+    <!-- R E P O R T I N G                                                       -->
+    <!-- ======================================================================= -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <stylesheet>maven</stylesheet>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <links>
+                        <link>http://download.oracle.com/javase/1.5.0/docs/api/</link>
+                        <link>http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2</link>
+                        <link>http://www.day.com/maven/jsr170/javadocs/jcr-2.0/</link>
+                        <link>http://sling.apache.org/apidocs/sling5</link>
+                        <link>http://dev.day.com/docs/en/cq/current/javadoc</link>
+                        <link>http://jackrabbit.apache.org/api/2.4</link>
+                        <link>http://www.osgi.org/javadoc/r4v42</link>
+                    </links>
+                    <excludePackageNames>*.impl:*.internal:${site.javadoc.exclude}</excludePackageNames>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <!-- ======================================================================= -->
+    <!-- B U I L D                                                               -->
+    <!-- ======================================================================= -->
+    <build>
+        <!-- allows shorthand "mvn" to run a normal "mvn clean install" build -->
+        <defaultGoal>clean install</defaultGoal>
+
+        <plugins>
+            <!-- Require Java 5 or higher for building -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-java</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <message>
+                                        CQ5 must be compiled with Java 5 or higher
+                                    </message>
+                                    <version>1.5.0</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>set-bundle-required-execution-environment</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <exportAntProperties>true</exportAntProperties>
+                            <target>
+                                <script language="javascript"> <![CDATA[
+                                    var System = java.lang.System;
+                                    var bree = "J2SE-1.5";
+                                    var cqJavaVersion = System.getProperty("cq.java.version");
+                                    if (!cqJavaVersion) {
+                                        cqJavaVersion = project.getProperty("cq.java.version");
+                                    }
+                                    if (cqJavaVersion == "6") {
+                                        bree = "JavaSE-1.6";
+                                    } else if (cqJavaVersion != "5") {
+                                        System.out.println("Unsupported cq.java.version=" + cqJavaVersion + "; must be 5 or 6");
+                                        throw "cq.java.version must be 5 or 6";
+                                    }
+                                    System.out.println("Setting Bundle-RequiredExecutionEnvironment=" + bree + " from cq.java.version=" + cqJavaVersion);
+                                    project.setProperty("cq.bree", bree);
+                                    ]]></script>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <goals>deploy</goals>
+                    <localCheckout>true</localCheckout>
+                    <releaseProfiles>release</releaseProfiles>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!--  Environmental constraint checking (Maven Version, JDK etc.) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.2</version>
+                </plugin>
+
+                <!-- Apache Felix SCR Plugin -->
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-scr-plugin</artifactId>
+                    <version>1.13.0</version>
+                    <!-- As QDox is trying to inspect/load the classes
+                         we have to add a slf4j implementation to the
+                         class path of the plugin - we usually use
+                         a static field for the logger and during class
+                         loading this field requires an slf4j implementation!
+                     -->
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-simple</artifactId>
+                            <version>1.5.2</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>generate-scr-scrdescriptor</id>
+                            <goals>
+                                <goal>scr</goal>
+                            </goals>
+                            <configuration>
+                                <!-- Private service properties for all services. -->
+                                <properties>
+                                    <service.vendor>Day Management AG</service.vendor>
+                                </properties>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Apache Sling Plugin
+                     This plugin can be used to deploy the bundles to our obr.
+                -->
+                <plugin>
+                    <groupId>org.apache.sling</groupId>
+                    <artifactId>maven-sling-plugin</artifactId>
+                    <version>2.1.0</version>
+                    <configuration>
+                        <slingUrl>${sling.url.author}</slingUrl>
+                        <usePut>true</usePut>
+                    </configuration>
+                </plugin>
+
+                <!-- Apache Sling JSPC Plugin -->
+                <plugin>
+                    <groupId>org.apache.sling</groupId>
+                    <artifactId>maven-jspc-plugin</artifactId>
+                    <version>2.0.6</version>
+                    <executions>
+                        <execution>
+                            <id>compile-jsp</id>
+                            <goals>
+                                <goal>jspc</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Apache Felix Bundle Plugin -->
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>2.3.7</version>
+                    <inherited>true</inherited>
+                    <configuration>
+                        <obrRepository>NONE</obrRepository>
+                        <instructions>
+                            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                            <Bundle-RequiredExecutionEnvironment>${cq.bree}</Bundle-RequiredExecutionEnvironment>
+                            <_removeheaders>
+                                GraniteSiteRepository-Id,
+                                GraniteSiteRepository-URL,
+                                ReleaseRepository-Id,
+                                ReleaseRepository-Name,
+                                ReleaseRepository-URL,
+                                SnapshotRepository-Id,
+                                SnapshotRepository-Name,
+                                SnapshotRepository-URL
+                            </_removeheaders>
+                        </instructions>
+                    </configuration>
+                </plugin>
+
+                <!-- Compile for Java 5 and higher -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.0</version>
+                    <configuration>
+                        <source>1.${cq.java.version}</source>
+                        <target>1.${cq.java.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+
+                <!-- Maven Antrun Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.7</version>
+                </plugin>
+
+                <!-- Maven Buildnumber Plugin -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.2</version>
+                </plugin>
+
+                <!-- Set fix version for javadoc plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.9</version>
+                </plugin>
+
+                <!-- Set fix version for resources plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.6</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+
+                <!-- Set fix version for dependency plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.6</version>
+                </plugin>
+
+                <!-- Set fix version for jar plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+
+                <!-- Set fix version for idea plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-idea-plugin</artifactId>
+                    <version>2.2</version>
+                </plugin>
+
+                <!-- Set fix version for surefire plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.13</version>
+                </plugin>
+
+                <!-- Set fix version for war plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.3</version>
+                </plugin>
+
+                <!-- Set fix version for failsafe plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.13</version>
+                </plugin>
+                
+                <!-- Set fix version for install plugin  -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+                
+                <!-- Set fix version for deploy plugin  -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>
+
+                <!-- Set fix version for content-package plugin  -->
+                <plugin>
+                    <groupId>com.day.jcr.vault</groupId>
+                    <artifactId>content-package-maven-plugin</artifactId>
+                    <version>0.0.20</version>
+                </plugin>
+
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-dependency-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [2.1,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>copy</goal>
+                                            <goal>copy-dependencies</goal>
+                                            <goal>unpack</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.codehaus.mojo
+                                        </groupId>
+                                        <artifactId>
+                                            build-helper-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.7,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>
+                                                reserve-network-port
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-jar-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [2.3.1,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>
+                                                jar
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-antrun-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.6,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>run</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <!-- 
+                                        to make this property transparently available in Eclipse run the maven-antrun-plugin
+                                        - on full workspace build
+                                        - when the project is configured
+                                    -->
+                                    <action>
+                                        <execute>
+                                            <runOnIncremental>false</runOnIncremental>
+                                            <runOnConfiguration>true</runOnConfiguration>
+                                        </execute>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <!-- ======================================================================= -->
+    <!-- P R O F I L E S                                                         -->
+    <!-- ======================================================================= -->
+    <profiles>
+        <profile>
+            <!--
+              Use this profile to install the OSGi bundle
+              automatically, during development
+            -->
+            <id>autoInstallBundle</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-bundle</id>
+                                <goals>
+                                    <goal>install</goal>
+                                </goals>
+                                <configuration>
+                                    <slingUrl>http://localhost:4502/system/console/bundles</slingUrl>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!--
+               Use this profile to generate an idea project with attached sources
+               and linked modules
+            -->
+            <id>develop</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-idea-plugin</artifactId>
+                        <configuration>
+                            <downloadSources>true</downloadSources>
+                            <linkModules>true</linkModules>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <!-- This is the release profile. -->
+            <id>release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <!-- This is the publish profile. -->
+            <id>publish</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <configuration>
+                            <slingUrl>${sling.url.publish}</slingUrl>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <!-- ======================================================================= -->
+    <!-- D E P E N D E N C Y   M A N A G E M E N T                               -->
+    <!-- ======================================================================= -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Servlet API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.4</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- JSP API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jsp-api</artifactId>
+                <version>2.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- JSTL Dependencies -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>1.1.2</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- OSGi -->
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>4.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- JCR -->
+            <dependency>
+                <groupId>javax.jcr</groupId>
+                <artifactId>jcr</artifactId>
+                <version>2.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.5.2</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.8.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jmock</groupId>
+                <artifactId>jmock-junit4</artifactId>
+                <version>2.5.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.5.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.5.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.13</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.annotations</artifactId>
+            <version>1.9.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>biz.aQute</groupId>
+            <artifactId>bndlib</artifactId>
+            <version>1.43.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <!--
+      Deploy to the Maven Repositories using WebDAV URLs. This enables abstracting
+      the real location of the repositories and better access control. Finally
+      it mirrors read and write operations through the same mechanism.
+      NOTE: To use these dav: URLs, the WebDAV extension to Maven Wagon must
+      be declared in the build section above.
+    -->
+    <distributionManagement>
+      <repository>
+        <id>${releaseRepository-Id}</id>
+        <name>${releaseRepository-Name}</name>
+        <url>${releaseRepository-URL}</url>
+      </repository>
+      <snapshotRepository>
+        <id>${snapshotRepository-Id}</id>
+        <name>${snapshotRepository-Name}</name>
+        <url>${snapshotRepository-URL}</url>
+        <uniqueVersion>false</uniqueVersion>
+      </snapshotRepository>
+    </distributionManagement>
+
+    <!-- =================================================================== -->
+    <!-- C O N T I N U O U S   I N T E G R A T I O N   M A N A G E M E N T   -->
+    <!-- =================================================================== -->
+    <ciManagement>
+        <system>continuum</system>
+        <url>http://continuum.dev.day.com/</url>
+        <notifiers>
+            <notifier>
+                <type>mail</type>
+                <sendOnError>true</sendOnError>
+                <sendOnFailure>true</sendOnFailure>
+                <sendOnSuccess>false</sendOnSuccess>
+                <sendOnWarning>false</sendOnWarning>
+                <configuration>
+                    <address>cq.misc@day.com</address>
+                </configuration>
+            </notifier>
+        </notifiers>
+    </ciManagement>
+
+</project>

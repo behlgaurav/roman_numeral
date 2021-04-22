@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>day-commons</artifactId>
+    <groupId>com.day.commons</groupId>
+    <version>3</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>day-commons-text</artifactId>
+  <packaging>bundle</packaging>
+  <name>Day Commons Library - Text Support</name>
+  <version>1.1.3</version>
+  <description>Text manipulation support classes.</description>
+  <scm>
+    <connection>scm:svn:http://svn.day.com/repos/commons/tags/day-commons-text-1.1.3</connection>
+    <developerConnection>scm:svn:http://svn.day.com/repos/commons/tags/day-commons-text-1.1.3</developerConnection>
+    <url>http://svn.day.com/repos/commons/tags/day-commons-text-1.1.3</url>
+  </scm>
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <testSourceDirectory>src/test</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-Category>day-commons</Bundle-Category>
+            <Export-Package>com.day.text.*;version=1.1.2</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <distributionManagement>
+    <status>deployed</status>
+  </distributionManagement>
+</project>

@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 06:41:55 UTC 2021
+org.apache.sling.testing.hamcrest-1.0.2.pom>=
+org.apache.sling.testing.hamcrest-1.0.2.jar>central=
+org.apache.sling.testing.hamcrest-1.0.2.pom>central=

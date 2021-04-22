@@ -1,0 +1,93 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.openclover</groupId>
+    <artifactId>clover</artifactId>
+    <version>4.4.1</version>
+    <name>Clover Ant</name>
+    <description>
+        Clover is an award winning code coverage and testing tool for Java and Groovy.
+        It integrates easily with Maven, Ant, Grails, Eclipse and IntelliJ IDEA
+        as well as with continuous integration servers such as Bamboo, Jenkins or Hudson.
+
+        Note: before Clover 4.0 this artifact was named com.cenqua.clover:clover.
+    </description>
+    <url>http://openclover.org</url>
+    <packaging>jar</packaging>
+    <organization>
+        <name>OpenClover.org</name>
+        <url>http://openclover.org</url>
+    </organization>
+    <issueManagement>
+        <system>Bitbucket</system>
+        <url>https://bitbucket.org/openclover/clover/issues</url>
+    </issueManagement>
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:hg:ssh://hg@bitbucket.org/openclover/clover</connection>
+        <developerConnection>scm:hg:ssh://hg@bitbucket.org/openclover/clover</developerConnection>
+        <url>https://bitbucket.org/openclover/clover/src</url>
+    </scm>
+    <developers>
+        <developer>
+            <id>marek-parfianowicz</id>
+            <name>Marek Parfianowicz</name>
+            <email>marek.parfianowicz@gmail.com</email>
+        </developer>
+        <developer>
+            <id>grzlew</id>
+            <name>Grzegorz Lewandowski</name>
+            <email>grzlew@gmail.com</email>
+        </developer>
+    </developers>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+        </extensions>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

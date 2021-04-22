@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 06:44:10 UTC 2021
+org.apache.sling.bnd.models-1.0.0.jar>central=
+org.apache.sling.bnd.models-1.0.0.pom>central=

@@ -1,0 +1,143 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.day</groupId>
+    <artifactId>day</artifactId>
+    <version>3</version>
+  </parent>
+  
+  <groupId>com.day.commons</groupId>
+  <artifactId>day-commons</artifactId>
+  <version>3</version>
+  <packaging>pom</packaging>
+  
+  <name>Day Commons Library (Parent Project)</name>
+  <description>
+    The Day Commons Library provides miscellaneous libraries
+    providing commons functionality used in multiple projects.
+    As a collection of libraries, the Day Commons Library is
+    comparable to the Apache Commons Library.
+  </description>
+
+  <!-- Have to define SCM location per product to keep our structure -->
+  <scm>
+    <connection>scm:svn:http://svn.day.com/repos/commons/trunk</connection>
+    <developerConnection>scm:svn:http://svn.day.com/repos/commons/trunk</developerConnection>
+    <url>http://svn.day.com/repos/commons/trunk</url>
+  </scm>
+
+  <!-- List modules to be included in the build here ! -->
+  <modules>
+    <module>any</module>
+    <module>cli</module>
+    <module>concurrent</module>
+    <module>durbo/core</module>
+    <module>durbo/packman</module>
+    <module>durbo/packutil</module>
+    <module>gfx</module>
+    <module>gui</module>
+    <module>io</module>
+    <module>jcrtools</module>
+    <module>jmx</module>
+    <module>json</module>
+    <module>jstl</module>
+    <module>ldapclient</module>
+    <module>logging</module>
+    <module>misc</module>
+    <module>naming</module>
+    <module>net</module>
+    <module>nethtcp</module>
+    <module>security</module>
+    <module>text</module>
+    <module>xml</module>
+  </modules>
+
+  <build>
+     <plugins>
+            <plugin>
+                <groupId>com.day.sling</groupId>
+                <artifactId>maven-sling-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bundle-deploy</id>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <obr>
+                        http://obr.dev.day.com/
+                    </obr>
+                </configuration>
+            </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+                <tagBase>http://svn.day.com/repos/commons/tags</tagBase>
+            </configuration>
+          </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.day.sling</groupId>
+                    <artifactId>maven-sling-plugin</artifactId>
+                    <version>1.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>0.9.0-incubator-20070524-day</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.0-beta-6</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+    </build>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+              <groupId>javax.jcr</groupId>
+              <artifactId>jcr</artifactId>
+              <version>1.0</version>
+              <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+              <groupId>com.day.crx</groupId>
+              <artifactId>crx-api</artifactId>
+              <version>1.3</version>
+              <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+              <groupId>com.day.crx</groupId>
+              <artifactId>crx-commons</artifactId>
+              <version>1.3</version>
+              <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+              <groupId>com.day.crx</groupId>
+              <artifactId>crx-core</artifactId>
+              <version>1.3</version>
+              <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.0.1</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

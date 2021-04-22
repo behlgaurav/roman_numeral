@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 08:21:36 UTC 2021
+org.apache.sling.scripting.sightly.runtime-1.2.4-1.4.0.jar>central=
+org.apache.sling.scripting.sightly.runtime-1.2.4-1.4.0.pom>central=

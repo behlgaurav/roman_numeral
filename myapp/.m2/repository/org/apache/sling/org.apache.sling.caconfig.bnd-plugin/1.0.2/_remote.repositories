@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 06:44:10 UTC 2021
+org.apache.sling.caconfig.bnd-plugin-1.0.2.jar>central=
+org.apache.sling.caconfig.bnd-plugin-1.0.2.pom>central=

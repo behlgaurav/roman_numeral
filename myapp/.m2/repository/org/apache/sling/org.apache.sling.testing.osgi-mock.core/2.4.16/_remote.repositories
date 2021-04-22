@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 06:41:54 UTC 2021
+org.apache.sling.testing.osgi-mock.core-2.4.16.pom>central=
+org.apache.sling.testing.osgi-mock.core-2.4.16.pom>=
+org.apache.sling.testing.osgi-mock.core-2.4.16.jar>central=

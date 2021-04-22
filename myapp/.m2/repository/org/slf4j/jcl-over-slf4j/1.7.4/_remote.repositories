@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 06:41:54 UTC 2021
+jcl-over-slf4j-1.7.4.pom>=
+jcl-over-slf4j-1.7.4.jar>adobe-public-releases=
+jcl-over-slf4j-1.7.4.pom>adobe-public-releases=

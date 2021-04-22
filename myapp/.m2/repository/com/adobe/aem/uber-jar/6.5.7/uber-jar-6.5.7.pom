@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+/*************************************************************************
+ *
+ * ADOBE CONFIDENTIAL
+ * __________________
+ *
+ *  Copyright 2012 Adobe Systems Incorporated
+ *  All Rights Reserved.
+ *
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Adobe Systems Incorporated and its suppliers,
+ * if any.  The intellectual and technical concepts contained
+ * herein are proprietary to Adobe Systems Incorporated and its
+ * suppliers and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from Adobe Systems Incorporated.
+ **************************************************************************/
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <!-- ====================================================================== -->
+  <!-- P R O J E C T  D E S C R I P T I O N                                   -->
+  <!-- ====================================================================== -->
+  <groupId>com.adobe.aem</groupId>
+  <artifactId>uber-jar</artifactId>
+  <version>6.5.7</version>
+  <name>Adobe AEM Uber jar</name>
+  <description>The Adobe AEM Uber jar.</description>
+  <inceptionYear>2010</inceptionYear>
+  <url>https://www.adobe.com/</url>
+  <organization>
+    <name>Adobe Systems Incorporated</name>
+    <url>https://www.adobe.com/</url>
+  </organization>
+  
+  <licenses>
+	<license>
+		<name>Copyright 2007 Adobe. All Rights Reserved.</name>
+		<comments>NOTICE: All information contained herein is, and remains the property of Adobe and its suppliers, if any. The intellectual and technical concepts contained herein are proprietary to Adobe and its suppliers and are protected by all applicable intellectual property laws, including trade secret and copyright laws. Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained from Adobe</comments>
+	</license>
+  </licenses>
+  <developers>
+	<developer>
+		<organization>Adobe</organization>
+		<organizationUrl>https://www.adobe.com/</organizationUrl>
+	</developer>
+  </developers>
+
+  <scm>
+	<url/>
+  </scm>
+</project>
+
+
+

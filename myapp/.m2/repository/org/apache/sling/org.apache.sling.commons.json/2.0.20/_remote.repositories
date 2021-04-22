@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 06:41:54 UTC 2021
+org.apache.sling.commons.json-2.0.20.pom>=
+org.apache.sling.commons.json-2.0.20.jar>central=
+org.apache.sling.commons.json-2.0.20.pom>central=

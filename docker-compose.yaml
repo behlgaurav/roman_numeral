@@ -1,0 +1,9 @@
+version: '3'
+services:
+  author:
+    image: aem-author
+    build: ./aem-author
+    mem_limit: 2g
+    hostname: localhost
+    ports:
+      - "4502:4502"

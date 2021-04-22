@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 22 06:41:54 UTC 2021
+org.osgi.annotation.versioning-1.1.0.jar>central=
+org.osgi.annotation.versioning-1.1.0.pom>central=
+org.osgi.annotation.versioning-1.1.0.pom>=

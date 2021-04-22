@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+<!--
+/*************************************************************************
+*
+* ADOBE CONFIDENTIAL
+* ___________________
+*
+*  Copyright 2011 Adobe Systems Incorporated
+*  All Rights Reserved.
+*
+* NOTICE:  All information contained herein is, and remains
+* the property of Adobe Systems Incorporated and its suppliers,
+* if any.  The intellectual and technical concepts contained
+* herein are proprietary to Adobe Systems Incorporated and its
+* suppliers and are protected by trade secret or copyright law.
+* Dissemination of this information or reproduction of this material
+* is strictly forbidden unless prior written permission is obtained
+* from Adobe Systems Incorporated.
+**************************************************************************/
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+  <!-- Shared parent project definition for Adobe Systems, Inc. -->
+  <groupId>com.adobe</groupId>
+  <artifactId>adobe</artifactId>
+  <version>6</version>
+  <packaging>pom</packaging>
+
+  <name>Adobe Systems Incorporated</name>
+  <description>
+    This project definition contains the core definition for all Maven
+    projects of Adobe Systems Incorporated, such that we have a consistent project
+    build environment and need not repeat common configuration everytime.
+
+    Each parent project of the Adobe products should refer to this project
+    (${project.groupId}:${project.artifactId}:${project.version}) as its
+    parent. It is not intended for this project to be modified often.
+    Hence use a simple counter as its version.
+  </description>
+
+  <!--
+    The inception year is used to calculate the ${projectTimespan} property
+    used in the automatically included license information. We set it here
+    to the year when Adobe was founded, but projects can override this setting
+    with a more recent year if appropriate.
+  -->
+  <inceptionYear>1982</inceptionYear>
+
+  <!--
+    SCM configuration must be maintained per-project. Use the below
+    commented configuration as a hint on how to set configuration in your
+    project.
+
+    The reason for not providing a master configuration is, that we use
+    a subtree per product (e.g. cq, cq4, crx, osgi) in which the trunk,
+    branches and tags folders reside. If we configure here, Maven will
+    add another level with the name of the product parent version below
+    the given URL, which would be wrong of course.
+  -->
+  <scm>
+    <connection>scm:git:git@git.corp.adobe.com:Granite/adobe.git</connection>
+    <developerConnection>scm:git:git@git.corp.adobe.com:Granite/adobe.git</developerConnection>
+    <url>https://git.corp.adobe.com/Granite/adobe/tree/master/parent</url>
+    <tag>adobe-6</tag>
+  </scm>
+
+  <!--
+    Organization description of Adobe Systems Incorporated.
+    This should not be overwritten by projects as it is certainly common
+    to all products.
+  -->
+  <organization>
+    <name>Adobe Systems Incorporated</name>
+    <url>http://www.adobe.com/</url>
+  </organization>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <skip.checkstyle>true</skip.checkstyle>
+  </properties>
+
+  <prerequisites>
+    <maven>3.0.5</maven>
+  </prerequisites>
+  
+  <!--
+    This definition forces inclusion of source library builds for
+    repository deployment.
+
+    It is discussable whether this actually makes sense. On the other hand
+    it simplifies development if the source is readily available without
+    having to checkout and refer to the source manually. Having the source
+    in the repository also allows IDE configuration file builders of maven
+    to download the source and refer to it.
+  -->
+  <build>
+
+    <!-- Add the WebDAV extension to wagon to support WebDAV Deployment -->
+    <extensions>
+        <extension>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-webdav-jackrabbit</artifactId>
+            <version>2.4</version>
+        </extension>
+    </extensions>
+
+    <!-- build the source libraries for deployment -->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <inherited>true</inherited>
+<!--
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+           </goals>
+         </execution>
+       </executions>
+-->
+     </plugin>
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.0.5,)</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <goals>deploy</goals>
+          <scmCommentPrefix>NPR-84 - [maven-scm] :</scmCommentPrefix>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!--
+          Use the remote resources plugin to automatically inject
+          a META-INF/LICENSE file into the build. Project-specific
+          license information is automatically included from the
+          src/main/appended-resources/META-INF/LICENSE file if it
+          exists. Projects that for some reason should not include
+          this license metadata need to explicitly disable the
+          remote resources plugin with the "skip" configuration option.
+        -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>
+                  com.adobe:adobe-jar-resource-bundle:1.0.0
+                </resourceBundle>
+              </resourceBundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>granite/checkstyle-only-license.xml</configLocation>
+          <headerLocation>granite/adobe.license.java</headerLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <includes>**</includes>
+          <skip>${skip.checkstyle}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.adobe.granite</groupId>
+            <artifactId>granite-checkstyle-rules</artifactId>
+            <version>0.1.3</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.3.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.4</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.9.1</version>
+            </plugin>
+        </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <!--
+        The "pedantic" profile is used for verifying that the source
+        files contain proper Adobe license headers, and may later be
+        extended to do also other sorts of compliance checks. This
+        profile should typically be enabled in a CI build.
+
+        Components that contain source files from external sources or that
+        for some other reasons want to disable the Checkstyle verification,
+        can do so by adding the <skip> or <excludes> configuration options
+        in a <pluginManagement> entry for the Checkstyle plugin.
+      -->
+      <id>pedantic</id>
+      <properties>
+        <skip.checkstyle>false</skip.checkstyle>
+      </properties>
+    </profile>
+  </profiles>
+
+</project>
